@@ -1,0 +1,18 @@
+{
+  "name": "manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Main.js",
+  "scripts": {
+    "test": "node main"
+  },
+  "author": "ohurjon",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.6.1",
+    "discord.js": "^12.2.0",
+    "got": "^11.5.1",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31"
+  }
+}
