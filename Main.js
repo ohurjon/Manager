@@ -20,6 +20,7 @@ client.on("ready", async () => {
   err_channel = guild.channels.cache.get("701119696782753875");
   role = await guild.roles.fetch("427127404079611918");
   manage = guild.channels.cache.get("726004093654532097");
+  m_message = await manage.messages.fetch({ limit: 10 });
   log = guild.channels.cache.get("725200180386857011");
   console.log();
   console.log();
