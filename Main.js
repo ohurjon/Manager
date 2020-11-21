@@ -35,85 +35,96 @@ client.on("message", async (message) => {
   const arg = message.content.split(" ");
   const command = arg[0].replace(prefix, "");
   arg.shift();
-
-  switch (command) {
-    case "help":
-      embed.setAuthor("도움말", client.user.avatarURL());
-      embed.addField(prefix + "help", "이 봇의 명령어들을 확인 가능합니다.");
-      embed.addField(
-        prefix + "aud",
-        "메시지를 보낸 서버의 인원을 확인 가능합니다."
-      );
-      embed.addField(
-        prefix + "invite",
-        "메시지를 보낸 서버의 초대 링크를 가져옵니다."
-      );
-      embed.addField(
-        prefix + "rule",
-        "메시지를 보낸 서버의 규칙을 확인합니다."
-      );
-      embed.addField(prefix + "youtube", "파워무비 유튜브 링크를 봅니다.");
-      //embed.addField(prefix+"new","파워무비 유튜브의 가장 최신 영상을 가져옵니다.");
-      embed.addField(prefix + "ee", "유튜브 코드가 맞는지 검사합니다.");
-      message.channel.send(embed);
-      break;
-    case "aud":
-      embed.setAuthor("현재 인원", client.user.avatarURL());
-      embed.setDescription(
-        `현재 ${message.guild.memberCount}명의 유저가 있습니다!`
-      );
-      message.channel.send(embed);
-      break;
-    case "invite":
-      embed.setAuthor("초대 코드", client.user.avatarURL());
-      embed.setDescription(
-        "이 서버의 초대코드는 https://discord.gg/hNnBvAn 입니다."
-      );
-      message.channel.send(embed);
-      break;
-    case "rule":
-      embed.setAuthor("규칙", client.user.avatarURL());
-      embed.setDescription("규칙은 <#719177411832578159> 확인 바랍니다.");
-      message.channel.send(embed);
-      break;
-    case "ee":
-      if (arg[0].length <= 11) {
-        embed.setAuthor("이스터에그", client.user.avatarURL());
-        json = await got(
-          `https://www.googleapis.com/youtube/v3/videos?key=${Setting.Youtube_Token}&part=status&id=${arg[0]}`
+  if ((/\|\|((?:.|\W|\s)+)\|\|/.test(message.content) || /\~\~((?:.|\W|\s)+)\~\~/.test(message.content)) && !(message.author.bot)) {
+    message.delete()
+    message.author.send("취소선과 스포일러는 사용하실수 없습니다.")
+  } else {
+    switch (command) {
+      case "help":
+        embed.setAuthor("도움말", client.user.avatarURL());
+        embed.addField(prefix + "help", "이 봇의 명령어들을 확인 가능합니다.");
+        embed.addField(
+          prefix + "aud",
+          "메시지를 보낸 서버의 인원을 확인 가능합니다."
         );
-        body = JSON.parse(json.body);
-        if (body.pageInfo.totalResults == 0) {
-          embed.setDescription("영상 검색 결과가 없습니다.").setColor("RED");
-          message.channel.send(embed);
-        } else {
-          if (body.items[0].status.privacyStatus == "unlisted") {
-            embed
-              .setDescription(
-                `올바른 유튜브 링크로 이어집니다!\n\n[보러가기](https://www.youtube.com/watch?v=${body.items[0].id})`
-              )
-              .setImage(
-                `https://i.ytimg.com/vi/${body.items[0].id}/maxresdefault.jpg`
-              )
-              .setColor("GREEN");
+        embed.addField(
+          prefix + "invite",
+          "메시지를 보낸 서버의 초대 링크를 가져옵니다."
+        );
+        embed.addField(
+          prefix + "rule",
+          "메시지를 보낸 서버의 규칙을 확인합니다."
+        );
+        embed.addField(prefix + "youtube", "파워무비 유튜브 링크를 봅니다.");
+        //embed.addField(prefix+"new","파워무비 유튜브의 가장 최신 영상을 가져옵니다.");
+        embed.addField(prefix + "ee", "유튜브 코드가 맞는지 검사합니다.");
+        message.channel.send(embed);
+        break;
+      case "aud":
+        embed.setAuthor("현재 인원", client.user.avatarURL());
+        embed.setDescription(
+          `현재 ${message.guild.memberCount}명의 유저가 있습니다!`
+        );
+        message.channel.send(embed);
+        break;
+      case "invite":
+        embed.setAuthor("초대 코드", client.user.avatarURL());
+        embed.setDescription(
+          "이 서버의 초대코드는 https://discord.gg/hNnBvAn 입니다."
+        );
+        message.channel.send(embed);
+        break;
+      case "rule":
+        embed.setAuthor("규칙", client.user.avatarURL());
+        embed.setDescription("규칙은 <#719177411832578159> 확인 바랍니다.");
+        message.channel.send(embed);
+        break;
+      case "ee":
+        if (arg[0].length <= 11) {
+          embed.setAuthor("이스터에그", client.user.avatarURL());
+          json = await got(
+            `https://www.googleapis.com/youtube/v3/videos?key=${Setting.Youtube_Token}&part=status&id=${arg[0]}`
+          );
+          body = JSON.parse(json.body);
+          if (body.pageInfo.totalResults == 0) {
+            embed.setDescription("영상 검색 결과가 없습니다.").setColor("RED");
             message.channel.send(embed);
           } else {
-            embed.setDescription("비공개 영상이 아닙니다.").setColor("RED");
-            message.channel.send(embed);
+            if (body.items[0].status.privacyStatus == "unlisted") {
+              embed
+                .setDescription(
+                  `올바른 유튜브 링크로 이어집니다!\n\n[보러가기](https://www.youtube.com/watch?v=${body.items[0].id})`
+                )
+                .setImage(
+                  `https://i.ytimg.com/vi/${body.items[0].id}/maxresdefault.jpg`
+                )
+                .setColor("GREEN");
+              message.channel.send(embed);
+            } else {
+              embed.setDescription("비공개 영상이 아닙니다.").setColor("RED");
+              message.channel.send(embed);
+            }
           }
+        } else {
+          embed
+            .setAuthor("이스터에그", client.user.avatarURL())
+            .setDescription("영상 검색 결과가 없습니다.")
+            .setColor("RED");
+          message.channel.send(embed);
         }
-      } else {
-        embed
-          .setAuthor("이스터에그", client.user.avatarURL())
-          .setDescription("영상 검색 결과가 없습니다.")
-          .setColor("RED");
-        message.channel.send(embed);
-      }
-      break;
-    default:
-      break;
+        break;
+      default:
+        break;
+    }
   }
 });
+
+client.on("messageUpdate", async (Oldmessage, NewMessage) => {
+  if (!(Oldmessage.content == NewMessage.content) && (/\|\|((?:.|\W|\s)+)\|\|/.test(NewMessage.content) || /\~\~((?:.|\W|\s)+)\~\~/.test(NewMessage.content)) && !(NewMessage.author.bot)) {
+    NewMessage.delete()
+    NewMessage.author.send("취소선과 스포일러는 사용하실수 없습니다.")
+  }
+})
 
 client.on("guildMemberAdd", async (member) => {
   welcome = await guild.channels.cache.find(
@@ -197,8 +208,7 @@ client.on("messageReactionAdd", async (msr, user) => {
     ManageMessages = await manage.messages.fetch({ limit: 10 });
     ManageMessage = ManageMessages.find(
       (message) =>
-        message.embeds[0].fields.find((field) => field.name == "ID").value ==
-        user.id
+        message.embeds[0].fields.find((field) => field.name == "ID").value == user.id
     );
     NewManageEmbed = new Discord.MessageEmbed();
 
@@ -218,6 +228,7 @@ client.on("messageReactionAdd", async (msr, user) => {
 
   // 타멸 시스템
   if (msr.message.channel.id == manage.id && !user.bot) {
+
     ReportChannel = client.channels.cache.find(
       (channel) => msr.message.embeds[0].fields[0].value == channel.topic
     );
@@ -236,11 +247,11 @@ client.on("messageReactionAdd", async (msr, user) => {
     await ReportChannelMessages.forEach((message) => {
       if (message.content) {
         LogEmbed.addField(
-          guild.member(message.author).displayName +
-            " | " +
-            moment(message.createdTimestamp)
-              .tz("Asia/Seoul")
-              .format("YYYY-MM-DD h:mm:ss"),
+          message.author.username +
+          " | " +
+          moment(message.createdTimestamp)
+            .tz("Asia/Seoul")
+            .format("YYYY-MM-DD h:mm:ss"),
           message.content
         );
       }
@@ -248,12 +259,15 @@ client.on("messageReactionAdd", async (msr, user) => {
 
     await log.send(LogEmbed);
 
+
+
     await ReportChannel.delete();
 
     NewManageEmbed.setAuthor(
       ManageEmbed.author.name,
       ManageEmbed.author.iconURL
     );
+
     NewManageEmbed.setDescription("신고 채널이 삭제 되었습니다!");
     NewManageEmbed.setFooter("로그를 로그방에 남겼습니다.");
 
@@ -292,6 +306,7 @@ client.on("messageReactionAdd", async (msr, user) => {
       embed.setAuthor(member.displayName, user.avatarURL());
       embed.setDescription("신고 채널이 생성 되었습니다!");
       embed.setFooter("잘못 누르셨다면 밑 이미지를 눌러 주시길 바랍니다.");
+      //embed.addField("알림","모든 메시지 내용은 관리자가 열람 가능합니다.")
       NewChannelMessage = await channel.send(member, embed);
       await NewChannelMessage.react("❌");
       embed.setAuthor(member.displayName, user.avatarURL());
