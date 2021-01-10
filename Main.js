@@ -254,8 +254,16 @@ client.on("messageReactionAdd", async (msr, user) => {
             .format("YYYY-MM-DD h:mm:ss"),
           message.content
         );
+        if (LogEmbed.length > 1024) {
+          LogEmbedFileds = LogEmbed.fields
+          LogEmbedFileds.pop();
+          LogEmbed.fields = LogEmbedFileds;
+          log.send(LogEmbed);
+          LogEmbed.fields = {};
+        }
       }
     });
+
 
     await log.send(LogEmbed);
 
